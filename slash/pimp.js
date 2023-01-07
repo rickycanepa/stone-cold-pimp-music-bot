@@ -65,10 +65,26 @@ module.exports = {
                         .setThumbnail(song.setThumbnail)
 
                 } else if (interaction.options.getSubcommand() === "search"){
+                    let url = interaction.options.getString("searchterms")
+                    const result = await client.player.search(url, {
+                        requestedBy: interaction.user,
+                        searchEngine: QueryType.AUTO
+                    })
+                    if (result.tracks.length === 0)
+                        return interaction.editReply("No results")
 
+                    const song = result.tracks[0]
+                    await queue.addTracks(song)
+                    embed
+                        .setDescription(`**[${song.title}](${song.url})** has been added to queue`)
+                        .setThumbnail(song.setThumbnail)
+                        .setFooter({ text: `Duration: ${song.duration}`})
                 }
-
-        }
+                if (!queue.playing) await queue.play()
+                await interaction.editReply({
+                    embeds: [embed]
+                })
+        },
         
 
 }
