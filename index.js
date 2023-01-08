@@ -1,22 +1,22 @@
 const Discord = require("discord.js")
 const dotenv = require("dotenv")
-const { REST } = ("@discordjs/rest")
-const { Routes } = ("discord-api-types/v9")
+const { REST } = require("@discordjs/rest")
+const { Routes } = require("discord-api-types/v9")
 const fs = require("fs")
 const { player, Player } = require("discord-player")
 
 dotenv.config()
 const TOKEN = process.env.TOKEN
 
-const LOAD_SLASH = process.argv[2] = "load"
+const LOAD_SLASH = process.argv[2] == "load"
 
 const CLIENT_ID = "1061399682779205693"
 const GUILD_ID = "1015418152231911478"
 
 const client = new Discord.Client({
     intents: [
-        "GUILDS",
-        "GUILD_VOICE_STATES"
+        Discord.GatewayIntentBits.Guilds,
+        Discord.GatewayIntentBits.GuildVoiceStates
     ]
 })
 
@@ -37,7 +37,7 @@ for (const file of slashFiles){
     if (LOAD_SLASH) commands.push(slashcmd.data.toJSON())
 }
 
-IF (LOAD_SLASH) {
+if (LOAD_SLASH) {
     const rest = new REST({ version: "9"}).setToken(TOKEN)
     console.log("Deploying slash commands")
     rest.put(Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), {body: commands})
@@ -61,10 +61,10 @@ else {
             if (!interaction.isCommand()) return
 
             const slashcmd = client.slashcommands.get(interaction.commandName)
-            if (!slashcmd) interaction.reply("Not a valid slash command")
+            if (!slashcmd) interaction.reply("bruh. use a real command")
 
             await interaction.deferReply()
-            await slashcmd.run( {client, interaction })
+            await slashcmd.run({ client, interaction })
         }
         handleCommand()
     })
